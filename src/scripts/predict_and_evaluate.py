@@ -7,10 +7,10 @@ from src.Components.fusion_model import build_fusion_model
 
 
 TEST_CSV = "Data/final_train_test_data/train_df.csv"
-TEST_PRICE_CSV = "Data/price/price_reference_train.csv"  
+TEST_PRICE_CSV = None  
 
-FUSION_WEIGHTS_PATH = "artifacts/fusion_model3.keras"
-OUTPUT_PATH = "artifacts/train_predictions.csv"
+FUSION_WEIGHTS_PATH = "artifacts/fusion_model.keras"
+OUTPUT_PATH = "artifacts/test_predictions.csv"
 
 
 

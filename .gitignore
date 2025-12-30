@@ -1,11 +1,6 @@
-Data/train_images_CNN/
-Data/test_images_CNN/
-Data/main_test_images_CNN/
-Data/price
-Data/cleaned_data
+
 constants/
 artifacts/
-
 __pycache__/
 .env
 *.h5

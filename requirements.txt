@@ -2,16 +2,12 @@ sentinelhub
 numpy
 matplotlib
 rasterio
-# Core numerical & data handling
 numpy
 pandas
 joblib
 
-# Machine Learning / Deep Learning
 tensorflow>=2.12
 
-# Classical ML utilities
 scikit-learn
 
-# Image processing
 Pillow
