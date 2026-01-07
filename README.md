@@ -2,16 +2,14 @@ MULTIMODAL HOUSE PRICE PREDICTION
 Integrating Tabular Data and Satellite Imagery for Real Estate Valuation
 
 
+
 OVERVIEW
 
 Traditional house price prediction models rely mainly on structured data such as size, location, and amenities. While effective, they fail to capture the visual and environmental context surrounding a property — greenery, road density, water proximity, and neighborhood layout — all of which strongly influence market value.
 
 This project builds a Multimodal Regression Pipeline that predicts property prices by fusing:
-
 Tabular data (numerical and categorical property attributes)
-
 Satellite imagery (environmental context from overhead views)
-
 By learning from both numbers and pixels, the system produces more realistic and robust property valuations.
 
 
@@ -19,23 +17,15 @@ By learning from both numbers and pixels, the system produces more realistic and
 OBJECTIVES
 
 Build a multimodal regression model for house price prediction
-
 Programmatically acquire satellite images using latitude and longitude
-
 Extract visual embeddings using CNNs
-
 Learn numerical embeddings using a deep tabular network
-
 Fuse both modalities into a unified prediction model
 
 Compare:
-
 Tabular-only baseline
-
 Image-based signal
-
 Multimodal fusion
-
 Create a scalable pipeline for future real-estate analytics use cases
 
 
@@ -43,17 +33,12 @@ Create a scalable pipeline for future real-estate analytics use cases
 THOUGHT PROCESS
 
 Property valuation is driven by two parallel information streams:
-
 Quantitative signals – size, rooms, age, location statistics
-
 Qualitative signals – greenery, density, road networks, surroundings
 
 Instead of manually engineering image features, this system:
-
 Learns representations automatically
-
 Keeps each modality independent during feature learning
-
 Fuses them only after high-level abstraction
 
 
@@ -77,6 +62,15 @@ git clone https://github.com/abhayrajawat314/House-Price-Prediction.git
 
 cd House-Price-Prediction
 
+Create some directories:
+Data/raw_data 
+Data/final_train_test_data
+Data/lat_long
+Data/main_test_images_CNN
+Data/train_images_CNN
+Data/price
+artifacts
+
 Create a virtual environment
 
 python -m venv venv
@@ -97,89 +91,90 @@ setx GOOGLE_MAPS_API_KEY "YOUR_KEY"
 
 HOW TO RUN THE PROJECT
 
-Step 1 — Download satellite images
-python src/Components/data_fetcher.py
+Step 1 — Run EDA_preprocessing.ipynb
 
-Step 2 — Train tabular encoder
-python train_tabular_encoder.py
+Creates:
+artifacts/zipcode_encoder.pkl
+Data/lat_long/image_metadata_train.csv
+Data/lat_long/image_metadata_main_test_df.csv
+Data/final_train_test_data/train_df.csv
+Data/final_train_test_data/test_df.csv
+Data/price/price_reference_train.csv
+
+Step 2 — Download satellite images
+python data_fetcher.py
+
+Creates:
+Data/main_test_images_CNN/satellite
+Data/train_images_CNN/satellite
+
+Step 3 — Train tabular encoder
+python -m src.scripts.train_tabular_encoder.py
 
 Creates:
 artifacts/tabular_encoder.keras
 artifacts/tabular_scaler.pkl
 artifacts/tabular_features.pkl
 
-Step 3 — Train satellite CNN encoder
-python train_satellite_encoder.py
+Step 4 — Train satellite CNN encoder
+python -m src.scripts.train_satellite_encoder.py
 
 Creates:
 artifacts/satellite_encoder.keras
 
-Step 4 — Train tabular-only baseline (optional)
-python train_tabular_only_model.py
+Step 5 — Train tabular-only baseline (optional)
+python -m src.scripts.tabular_only_train_and_predict.py
 
 Creates:
 artifacts/tabular_only_model.keras
+artifacts/tabular_only_test_predictions.csv
 
-Step 5 — Train multimodal fusion model
-python train_fusion_model.py
+Step 6 — Train multimodal fusion model
+python -m src.scripts.multimodal_training.py
 
 Creates:
 artifacts/fusion_model.keras
 
-Step 6 — Run inference
-python predict_fusion_model.py
+Step 7 — Run inference
+python -m src.scripts.multimodal_predict.py
 
 Creates:
 artifacts/test_predictions.csv
 
+
+
 WHAT THE MODEL LEARNS
 
 From tabular data:
-
 Property size
-
 Amenities
-
 Locality statistics
 
 From satellite images:
-
 Green cover
-
 Road connectivity
-
 Neighborhood density
 
 From fusion:
-
 Non-linear interaction between both data types
 
 
 
 EXPERIMENTS AND OBSERVATIONS
 
-Tabular-only model
-
+Tabular-only model:
 Strong baseline
-
 Misses environmental influence
-
 Image signal alone
-
 Higher variance
-
 Needs fusion for stability
 
-Multimodal fusion
-
+Multimodal fusion:
 Best generalization
-
 Learns neighborhood impact on prices
-
 Reduces overfitting to any single modality
 
 
 
 AUTHOR
-
 Abhay Rajawat
