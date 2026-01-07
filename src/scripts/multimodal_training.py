@@ -41,5 +41,5 @@ model.fit(
     verbose=1
 )
 
-model.save("artifacts/fusion_model3.keras")
-print("✅ Fusion model trained")
+model.save("artifacts/fusion_model.keras")
+print("Fusion model trained")

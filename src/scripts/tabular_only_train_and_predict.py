@@ -83,7 +83,7 @@ model.fit(
 )
 
 model.save(MODEL_PATH)
-print("✅ Tabular-only model trained & saved")
+print("Tabular-only model trained & saved")
 
 log_price_pred = model.predict(X_train, verbose=0).squeeze()
 price_pred = np.exp(log_price_pred)
@@ -97,4 +97,4 @@ results_df = pd.DataFrame({
 })
 
 results_df.to_csv(OUTPUT_PATH, index=False)
-print(f"✅ Predictions saved → {OUTPUT_PATH}")
+print(f"Predictions saved → {OUTPUT_PATH}")

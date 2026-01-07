@@ -22,9 +22,7 @@ class GoogleImageExtractor:
         self.image_size = image_size
         self.sleep_time = sleep_time
 
-    # --------------------------------------------------
-    # Satellite URL
-    # --------------------------------------------------
+
     def _satellite_url(self, lat, lon):
         return (
             "https://maps.googleapis.com/maps/api/staticmap"
@@ -36,9 +34,7 @@ class GoogleImageExtractor:
             f"&key={self.api_key}"
         )
 
-    # --------------------------------------------------
-    # Download helper (retry-safe)
-    # --------------------------------------------------
+
     def _download_image(self, url, save_path, max_retries=3):
         for attempt in range(max_retries):
             try:
@@ -61,9 +57,6 @@ class GoogleImageExtractor:
 
         return False
 
-    # --------------------------------------------------
-    # Main processing (RESUME-SAFE)
-    # --------------------------------------------------
     def process_dataframe(self, df, output_root):
         """
         df must contain: id, lat, long
@@ -74,9 +67,6 @@ class GoogleImageExtractor:
 
         missing_sat_path = os.path.join(output_root, "missing_satellite_ids.csv")
 
-        # --------------------------------------------------
-        # Load known-missing IDs (AS STRINGS)
-        # --------------------------------------------------
         missing_satellite_ids = set()
         if os.path.exists(missing_sat_path):
             missing_satellite_ids = set(
@@ -85,17 +75,15 @@ class GoogleImageExtractor:
 
         newly_missing = []
 
-        # --------------------------------------------------
-        # Iterate rows
-        # --------------------------------------------------
+  
         for _, row in df.iterrows():
-            image_id = str(row["id"]).strip()   # ✅ FIX
+            image_id = str(row["id"]).strip()  
             lat = row["lat"]
             lon = row["long"]
 
             sat_path = os.path.join(sat_dir, f"{image_id}.jpg")
 
-            # Skip if already known missing or already downloaded
+            
             if image_id in missing_satellite_ids or os.path.exists(sat_path):
                 continue
 
@@ -106,9 +94,6 @@ class GoogleImageExtractor:
                 print(f"[Satellite missing] ID {image_id}")
                 newly_missing.append(image_id)
 
-        # --------------------------------------------------
-        # Persist missing IDs (append-safe)
-        # --------------------------------------------------
         if newly_missing:
             all_missing = missing_satellite_ids.union(newly_missing)
             pd.DataFrame({"id": sorted(all_missing)}).to_csv(

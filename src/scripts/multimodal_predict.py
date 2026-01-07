@@ -57,4 +57,4 @@ if TEST_PRICE_CSV:
     print("R²  :", r2_score(y_true, price_pred))
 
 results.to_csv(OUTPUT_PATH, index=False)
-print(f"✅ Predictions saved → {OUTPUT_PATH}")
+print(f"Predictions saved → {OUTPUT_PATH}")

@@ -28,18 +28,16 @@ class MultimodalFusionPipeline:
 
         self.satellite_image_dir = satellite_image_dir
 
-    # --------------------------------------------------
-    # Generate TAB + SAT embeddings
-    # --------------------------------------------------
+    
     def generate_embeddings(self):
         df = pd.read_csv(self.train_csv_path)
         ids = df["id"].astype(str).str.strip().values
 
-        # ---- Tabular ----
+        
         X_tab = self.scaler.transform(df[self.feature_cols].values)
         tab_emb = self.tabular_encoder.predict(X_tab, verbose=0)
 
-        # ---- Satellite ----
+        
         sat_enc = SatelliteCNNEncoder(
             image_dir=self.satellite_image_dir,
             id_source_csv=self.train_csv_path
@@ -48,9 +46,7 @@ class MultimodalFusionPipeline:
 
         return ids, tab_emb, sat_emb
 
-    # --------------------------------------------------
-    # Load targets
-    # --------------------------------------------------
+
     def load_targets(self, ids):
         df = pd.read_csv(self.price_csv_path)
         id_to_y = dict(zip(df["id"].astype(str), df["log_price"]))
