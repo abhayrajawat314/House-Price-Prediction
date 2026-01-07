@@ -4,7 +4,6 @@ import joblib
 from tensorflow.keras.models import load_model
 
 from .SatelliteArchitecture import SatelliteCNNEncoder
-from .StreetArchitecture import StreetCNNEncoder
 
 
 class MultimodalFusionPipeline:
@@ -16,45 +15,42 @@ class MultimodalFusionPipeline:
         tabular_scaler_path,
         tabular_features_path,
         satellite_encoder_path,
-        street_encoder_path,
-        satellite_image_dir,
-        street_image_dir,
-        missing_street_ids_csv
+        satellite_image_dir
     ):
         self.train_csv_path = train_csv_path
         self.price_csv_path = price_csv_path
 
         self.tabular_encoder = load_model(tabular_encoder_path)
         self.satellite_encoder = load_model(satellite_encoder_path)
-        self.street_encoder = load_model(street_encoder_path)
 
         self.scaler = joblib.load(tabular_scaler_path)
         self.feature_cols = joblib.load(tabular_features_path)
 
         self.satellite_image_dir = satellite_image_dir
-        self.street_image_dir = street_image_dir
-        self.missing_street_ids_csv = missing_street_ids_csv
 
+    # --------------------------------------------------
+    # Generate TAB + SAT embeddings
+    # --------------------------------------------------
     def generate_embeddings(self):
         df = pd.read_csv(self.train_csv_path)
         ids = df["id"].astype(str).str.strip().values
 
+        # ---- Tabular ----
         X_tab = self.scaler.transform(df[self.feature_cols].values)
         tab_emb = self.tabular_encoder.predict(X_tab, verbose=0)
 
-        sat_enc = SatelliteCNNEncoder(self.satellite_image_dir, self.train_csv_path)
-        ids, sat_emb = sat_enc.generate_embeddings(self.satellite_encoder)
-
-        street_enc = StreetCNNEncoder(
-            self.street_image_dir,
-            self.train_csv_path,
-            self.price_csv_path,
-            self.missing_street_ids_csv
+        # ---- Satellite ----
+        sat_enc = SatelliteCNNEncoder(
+            image_dir=self.satellite_image_dir,
+            id_source_csv=self.train_csv_path
         )
-        _, street_emb = street_enc.generate_embeddings(self.street_encoder)
+        _, sat_emb = sat_enc.generate_embeddings(self.satellite_encoder)
 
-        return ids, tab_emb, sat_emb, street_emb
+        return ids, tab_emb, sat_emb
 
+    # --------------------------------------------------
+    # Load targets
+    # --------------------------------------------------
     def load_targets(self, ids):
         df = pd.read_csv(self.price_csv_path)
         id_to_y = dict(zip(df["id"].astype(str), df["log_price"]))
